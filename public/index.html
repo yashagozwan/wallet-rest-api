@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/style.css" />
+    <title>Wallet Rest Api</title>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="py-1">
+          <h1>Wallet Rest Api</h1>
+        </div>
+      </div>
+    </header>
+    <div class="spacer"></div>
+    <section>
+      <div class="container">
+        <div class="content-section">
+          <h2>auth</h2>
+          <div class="spacer"></div>
+          <div class="card">
+            <div class="badge">
+              <h4>POST</h4>
+            </div>
+            <div>
+              <span>Response: success boolean, status: created</span>
+              <p>
+                http://app-3cdd29af-b29d-4946-a821-a2a0ef11574f.cleverapps.io/auth/signup
+              </p>
+              <span>field: name, email and passowrd</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="badge">
+              <h4>POST</h4>
+            </div>
+            <div>
+              <span>Response: success boolean and token jwt</span>
+              <p>
+                http://app-3cdd29af-b29d-4946-a821-a2a0ef11574f.cleverapps.io/auth/signin
+              </p>
+              <span>field: email and passowrd</span>
+            </div>
+          </div>
+          <h2>create wallet and get wallet</h2>
+          <div class="spacer"></div>
+          <div class="card">
+            <div class="badge">
+              <h4>POST</h4>
+            </div>
+            <div>
+              <span>Response: success boolean, status: wallet created</span>
+              <p>
+                http://app-3cdd29af-b29d-4946-a821-a2a0ef11574f.cleverapps.io/wallets
+              </p>
+              <span>Put token in Authorization: 'Bearer ' + token</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="badge">
+              <h4>GET</h4>
+            </div>
+            <div>
+              <span
+                >Response: success boolean, data: { id, userId, walletAnddress,
+                balance, isActive, createdAt }</span
+              >
+              <p>
+                http://app-3cdd29af-b29d-4946-a821-a2a0ef11574f.cleverapps.io/wallets
+              </p>
+              <span>Put token in Authorization: 'Bearer ' + token</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

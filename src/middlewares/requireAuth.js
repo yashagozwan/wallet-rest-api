@@ -14,7 +14,7 @@ export default (req, res, next) => {
       return res.status(401).json({ success: false, error: 'unauthorization' });
 
     const { userId: id } = payload;
-    const [user] = await promisePool.query('SELECT * FROM users WHERE id = ?', [
+    const [user] = await promisePool.query('SELECT * FROM Users WHERE id = ?', [
       id,
     ]);
 

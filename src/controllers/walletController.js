@@ -46,6 +46,12 @@ export const getWallet = async (req, res) => {
       'SELECT * FROM Wallets WHERE id = ?',
       [id]
     );
+
+    if (!wallet.length)
+      return res
+        .status(400)
+        .json({ success: false, error: 'wallet not created' });
+
     res.status(200).json({ success: true, data: wallet[0] });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
