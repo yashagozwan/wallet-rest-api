@@ -20,7 +20,7 @@ export const createUser = async (req, res) => {
     );
 
     const [findDuplicate] = await promisePool.query(
-      'SELECT * FROM users WHERE email = ?',
+      'SELECT * FROM Users WHERE email = ?',
       [lowerCase(email)]
     );
 
@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
         .json({ success: false, error: 'email already exist' });
 
     const [user] = await promisePool.query(
-      'INSERT INTO users(name, email, password) VALUES (?, ?, ?)',
+      'INSERT INTO Users(name, email, password) VALUES (?, ?, ?)',
       [capitalize(name), lowerCase(email), await hash(password)]
     );
 
@@ -51,7 +51,7 @@ export const createUser = async (req, res) => {
 //* URL: /users
 export const getUsers = async (req, res) => {
   try {
-    const [users] = await promisePool.query('SELECT * FROM users');
+    const [users] = await promisePool.query('SELECT * FROM Users');
     const data = users.map((user) => ({
       ...user,
       modify: user.modify && moment(user.modify).fromNow(),
@@ -70,7 +70,7 @@ export const getUsers = async (req, res) => {
 export const getUser = async (req, res) => {
   const id = req.params.id;
   try {
-    const [user] = await promisePool.query('SELECT * FROM users WHERE id = ?', [
+    const [user] = await promisePool.query('SELECT * FROM Users WHERE id = ?', [
       id,
     ]);
 
@@ -88,7 +88,7 @@ export const updateUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
     const [rows] = await promisePool.query(
-      'UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?',
+      'UPDATE Users SET name = ?, email = ?, password = ? WHERE id = ?',
       [capitalize(name), lowerCase(email), await hash(password), id]
     );
 

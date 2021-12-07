@@ -11,7 +11,7 @@ export const signIn = async (req, res) => {
     );
 
     const [user] = await promisePool.query(
-      'SELECT * FROM users WHERE email = ?',
+      'SELECT * FROM Users WHERE email = ?',
       [email]
     );
 

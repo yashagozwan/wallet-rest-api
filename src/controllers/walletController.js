@@ -9,7 +9,7 @@ export const createWallet = async (req, res) => {
   const { id } = req.account;
   try {
     const [findExistId] = await promisePool.query(
-      'SELECT * FROM wallets WHERE userId = ?',
+      'SELECT * FROM Wallets WHERE userId = ?',
       [id]
     );
 
@@ -19,12 +19,12 @@ export const createWallet = async (req, res) => {
         .json({ success: false, error: 'wallet already exist' });
 
     const [wallet] = await promisePool.query(
-      'INSERT INTO wallets(userId, walletAddress, isActive) VALUES (?,?,?)',
+      'INSERT INTO Wallets(userId, walletAddress, isActive) VALUES (?,?,?)',
       [id, generateWalletAddress(), true]
     );
 
     const [block] = await promisePool.query(
-      'INSERT INTO blocks(walletId) VALUES (?)',
+      'INSERT INTO Blocks(walletId) VALUES (?)',
       [wallet.insertId]
     );
 
@@ -43,7 +43,7 @@ export const getWallet = async (req, res) => {
   const { id } = req.account;
   try {
     const [wallet] = await promisePool.query(
-      'SELECT * FROM wallets WHERE id = ?',
+      'SELECT * FROM Wallets WHERE id = ?',
       [id]
     );
     res.status(200).json({ success: true, data: wallet[0] });
