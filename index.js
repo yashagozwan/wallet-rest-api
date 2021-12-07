@@ -14,6 +14,10 @@ app.use('/users', userRoute);
 app.use('/account', accountRoute);
 app.use('/wallets', walletRoute);
 
+app.get('/', (req, res) => {
+  res.json({ success: true, status: 'server ready!' });
+});
+
 app.listen(port, () =>
   console.log(`listening on port: http://localhost:${port}`)
 );
