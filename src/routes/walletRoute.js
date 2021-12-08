@@ -1,7 +1,11 @@
 import express from 'express';
 
 import requireAuth from '../middlewares/requireAuth.js';
-import { createWallet, getWallet } from '../controllers/walletController.js';
+import {
+  createWallet,
+  getWallet,
+  transfers,
+} from '../controllers/walletController.js';
 
 const router = express.Router();
 
@@ -11,5 +15,6 @@ router.use(requireAuth);
 //* URL: /wallets
 router.post('/', createWallet);
 router.get('/', getWallet);
+router.post('/transfers', transfers);
 
 export default router;
