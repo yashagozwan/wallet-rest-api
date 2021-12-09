@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 import promisePool from '../database/promisePool.js';
-import { KEY } from '../config/init.js';
 import { compare, emailAndPasswordValidate } from '../models/authModel.js';
 
 export const signIn = async (req, res) => {
@@ -20,7 +19,7 @@ export const signIn = async (req, res) => {
         .status(404)
         .json({ success: false, error: 'incorrect email or password' });
 
-    const token = jwt.sign({ userId: user[0].id }, KEY);
+    const token = jwt.sign({ userId: user[0].id }, process.env.KEY);
     res.status(200).json({ success: true, token });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });

@@ -1,5 +1,8 @@
 import express from 'express';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: './src/config/.env' });
 
 import authRoute from './src/routes/authRoute.js';
 import userRoute from './src/routes/userRoute.js';
@@ -10,7 +13,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-
 app.use(express.static('public'));
 
 app.use('/auth', authRoute);

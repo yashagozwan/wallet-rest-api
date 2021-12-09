@@ -1,11 +1,13 @@
 import mysql from 'mysql2';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = mysql.createPool({
-  host: 'b6qhwtcq2mct5p4y8khb-mysql.services.clever-cloud.com',
-  port: '3306',
-  user: 'uf0uive1x7qiw1qu',
-  password: 'DAWRYuhqwpMkbFzPr36p',
-  database: 'b6qhwtcq2mct5p4y8khb',
+  host: process.env.HOST,
+  user: process.env.USER_DB,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
 });
 
 const promisePool = pool.promise();

@@ -5,6 +5,9 @@ import {
   createWallet,
   getWallet,
   transfers,
+  mutationIn,
+  mutationOut,
+  getWalletFromOutSide,
 } from '../controllers/walletController.js';
 
 const router = express.Router();
@@ -15,6 +18,9 @@ router.use(requireAuth);
 //* URL: /wallets
 router.post('/', createWallet);
 router.get('/', getWallet);
+router.post('/get', getWalletFromOutSide);
 router.post('/transfers', transfers);
+router.get('/mutation/in', mutationIn);
+router.get('/mutation/out', mutationOut);
 
 export default router;

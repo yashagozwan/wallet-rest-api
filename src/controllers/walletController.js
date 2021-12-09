@@ -3,6 +3,9 @@ import promisePool from '../database/promisePool.js';
 import {
   generateWalletAddress,
   walletAddressAndAmountVaidate,
+  findWalletByUserId,
+  findWalletByWalletAddress,
+  walletAddressValidate,
 } from '../models/walletModel.js';
 
 //* METHOD POST
@@ -19,7 +22,7 @@ export const createWallet = async (req, res) => {
     if (findExistId.length)
       return res
         .status(400)
-        .json({ success: false, error: 'wallet already exist' });
+        .json({ success: false, error: 'wallet already created' });
 
     const [wallet] = await promisePool.query(
       'INSERT INTO Wallets(userId, walletAddress, isActive) VALUES (?,?,?)',
@@ -43,19 +46,15 @@ export const createWallet = async (req, res) => {
 //* GET WALLET
 //* URL: /wallets
 export const getWallet = async (req, res) => {
-  const { id } = req.account;
   try {
-    const [wallet] = await promisePool.query(
-      'SELECT * FROM Wallets WHERE id = ?',
-      [id]
-    );
+    const wallet = await findWalletByUserId(req.account.id);
 
-    if (!wallet.length)
+    if (!wallet)
       return res
         .status(400)
         .json({ success: false, error: 'wallet not created' });
 
-    res.status(200).json({ success: true, data: wallet[0] });
+    res.status(200).json({ success: true, data: wallet });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
@@ -69,16 +68,13 @@ export const transfers = async (req, res) => {
     const { walletAddress, amount } =
       await walletAddressAndAmountVaidate.validateAsync(req.body);
 
-    const [walletSender] = await promisePool.query(
-      'SELECT * FROM Wallets WHERE id = ?',
-      [req.account.id]
-    );
+    const walletSender = await findWalletByUserId(req.account.id);
 
     let {
       balance: senderBalance,
       walletAddress: senderWalletAddress,
       id: senderWalletId,
-    } = walletSender[0];
+    } = walletSender;
 
     //* if send to own wallet
     if (walletAddress === senderWalletAddress)
@@ -86,13 +82,10 @@ export const transfers = async (req, res) => {
         .status(400)
         .json({ success: false, error: "can't send to own wallet" });
 
-    const [walletReceiver] = await promisePool.query(
-      'SELECT * FROM Wallets WHERE walletAddress = ?',
-      [walletAddress]
-    );
+    const walletReceiver = await findWalletByWalletAddress(walletAddress);
 
     //* if wallet not found
-    if (!walletReceiver.length)
+    if (!walletReceiver)
       return res
         .status(400)
         .json({ success: false, error: 'wallet address not found' });
@@ -101,7 +94,7 @@ export const transfers = async (req, res) => {
       balance: receiverBalance,
       userId: receiverUserId,
       id: receiverWalletId,
-    } = walletReceiver[0];
+    } = walletReceiver;
 
     //* if balance not enough
     if (senderBalance < amount)
@@ -139,5 +132,84 @@ export const transfers = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+//* METHOD GET
+//* GET WALLET
+//* URL: /wallets/out
+export const mutationOut = async (req, res) => {
+  try {
+    const wallet = await findWalletByUserId(req.account.id);
+    const { id: walletId } = wallet;
+
+    //* find out transaction by walletId
+    const [data] = await promisePool.query(
+      `SELECT T.id, name, walletAddress, amount, T.createdAt AS createdAt
+       FROM Users AS U
+          RIGHT JOIN Wallets AS W ON W.userId = U.id
+          RIGHT JOIN Transfers AS T ON T.receiverWalletId = W.id
+       WHERE T.senderWalletId = ?`,
+      [walletId]
+    );
+
+    //* if no outgoing transactions
+    if (!data.length)
+      return res
+        .status(404)
+        .json({ success: false, error: 'no outgoing transactions' });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+//* METHOD GET
+//* GET WALLET
+//* URL: /wallets/in
+export const mutationIn = async (req, res) => {
+  try {
+    const wallet = await findWalletByUserId(req.account.id);
+    const { id: walletId } = wallet;
+
+    //* find in transaction by walletId
+    const [data] = await promisePool.query(
+      `SELECT T.id, name, walletAddress, amount, T.createdAt AS createdAt
+       FROM Users AS U
+          RIGHT JOIN Wallets AS W ON W.userId = U.id
+          RIGHT JOIN Transfers AS T ON T.senderWalletId = W.id
+       WHERE T.receiverWalletId = ?`,
+      [walletId]
+    );
+
+    //* no incoming transactions
+    if (!data.length)
+      return res
+        .status(404)
+        .json({ success: false, error: 'no incoming transactions' });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+//* METHOD GET
+//* GET WALLET
+//* URL: /wallets/get
+export const getWalletFromOutSide = async (req, res) => {
+  try {
+    const { walletAddress } = walletAddressValidate.validateAsync(req.body);
+    const data = await findWalletByWalletAddress(walletAddress);
+
+    if (!data)
+      return res
+        .status(404)
+        .json({ success: false, error: 'wallet not found' });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(404).json({ success: false, error: error.message });
   }
 };
