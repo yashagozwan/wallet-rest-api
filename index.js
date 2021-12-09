@@ -26,6 +26,10 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use('/', (req, res) => {
+  res.status(404).json({ success: false, error: 'Not Found' });
+});
+
 app.listen(port, () =>
   console.log(`listening on port: http://localhost:${port}`)
 );
